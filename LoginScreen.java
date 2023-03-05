@@ -96,7 +96,7 @@ public class LoginScreen extends javax.swing.JFrame {
             inter.setVisible(true);
             inter.setResizable(false);
             this.dispose();
-            
+            //31
         } else {
             JOptionPane.showMessageDialog(this, "Kullanıcı adı veya şifre hatalı");
         }
