@@ -2,6 +2,11 @@
 package application;
 
 import javax.swing.JOptionPane;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 
 public class LoginScreen extends javax.swing.JFrame {
@@ -89,16 +94,38 @@ public class LoginScreen extends javax.swing.JFrame {
     private void confirmButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_confirmButtonActionPerformed
         String user = userText.getText();
         String pass = new String(passText.getPassword());
-
+        boolean success = false;
         if (user.equals("admin") && pass.equals("password")) {
             JOptionPane.showMessageDialog(this, "Hoşgeldiniz " + user);
             Interface inter = new Interface();
             inter.setVisible(true);
             inter.setResizable(false);
             this.dispose();
-            //31
+
         } else {
-            JOptionPane.showMessageDialog(this, "Kullanıcı adı veya şifre hatalı");
+            try (Socket s = new Socket("localhost", 5555)) {
+                DataInputStream in = new DataInputStream(s.getInputStream());
+                DataOutputStream out = new DataOutputStream(s.getOutputStream());
+
+                out.writeUTF(user + " " + pass);
+                success = in.readBoolean();
+
+            }catch (UnknownHostException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            if(success){
+                JOptionPane.showMessageDialog(this, "Hoşgeldiniz " + user);
+                Interface inter = new Interface();
+                inter.setVisible(true);
+                inter.setResizable(false);
+                this.dispose();
+            }else {
+                JOptionPane.showMessageDialog(this, "Kullanıcı adı veya şifre hatalı");
+            }
+
+
         }
     }//GEN-LAST:event_confirmButtonActionPerformed
 
